@@ -1,54 +1,91 @@
-# React + TypeScript + Vite
+# 🗂️ Comment Search App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript challenge solution for **Jobrapido**.
 
-Currently, two official plugins are available:
+This app allows users to search comments from a public JSON API and displays contextual results with smart highlighting.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔍 Search comments by body text (`https://jsonplaceholder.typicode.com/comments`)
+- ✅ Trigger search only on **form submit**
+- ✅ Input must be at least **4 characters**
+- ✅ Show up to **20 results**
+- ✅ Each result shows:
+  - Name
+  - Email
+  - Contextual 64-character snippet from body
+- ✨ Highlight matched text inside the body
+- ⚠️ Show user-friendly error messages
+- 🔁 Retry failed requests
+- 🧠 Focus input on load
+- 🧪 Tested with **Vitest** + **React Testing Library**
+- 🐳 Fully Dockerized (runs on port `8080`)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## 📦 Getting Started
+
+### ▶️ Run locally (Dev mode)
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit: [http://localhost:5173](http://localhost:5173)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 🐳 Run with Docker
+
+```bash
+docker build -t comment_search .
+docker run -p 8080:8080 comment_search
 ```
+
+Visit: [http://localhost:8080](http://localhost:8080)
+
+---
+
+### 🧪 Run tests
+
+```bash
+npm run test
+```
+
+---
+
+## 🛠️ Stack
+
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Vitest](https://vitest.dev/)
+- [Testing Library](https://testing-library.com/)
+- [Docker](https://www.docker.com/)
+
+---
+
+## 🎁 Bonus Ideas (not implemented)
+
+- [ ] 🔠 Typeahead / autosuggestions
+- [ ] 📃 Pagination of results
+
+---
+
+## 🤝 Author
+
+Built with ❤️ and clean code by [Me](https://www.linkedin.com/in/denis-lugavtsov/)
+---
+
+## 💡 Bonus Implementation Thoughts
+
+If I had more time, I would implement the bonus features as follows:
+
+- **Typeahead / Autosuggestions**: I would track the user's previous search queries or parse unique words from already loaded comments. Then I’d show a filtered dropdown below the input using a custom component (or a native `<datalist>` for simplicity). It would update as the user types and allow arrow key navigation.
+
+- **Pagination**: After fetching and filtering the data, I’d calculate total pages and display a set of navigation buttons (Prev, Next, or numeric). The UI would update based on the selected page using React state, slicing the data appropriately.
+
+Instead, I focused on enhancing search logic (with RegExp), contextual highlighting, and overall UX and test quality.
