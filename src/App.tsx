@@ -1,35 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import SearchForm from './components/SearchForm';
+import CommentList from './components/CommentList';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface Comment {
+  id: number;
+  name: string;
+  email: string;
+  body: string;
 }
 
-export default App
+function App() {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const handleSearch = async (query: string) => {
+    if (query.length < 4) return;
+
+    setLoading(true);
+    setError('');
+    setHasSearched(true);
+    try {
+      const res = await fetch('https://jsonplaceholder.typicode.com/comments');
+      const data: Comment[] = await res.json();
+      const filtered = data
+        .filter(c => c.body.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 20);
+
+      setComments(filtered);
+    } catch (e) {
+      setError('Failed to fetch comments');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadInitialComments = async () => {
+    setLoading(true);
+    setError('');
+    setHasSearched(true);
+    try {
+      const res = await fetch('https://jsonplaceholder.typicode.com/comments');
+      const data: Comment[] = await res.json();
+      setComments(data.slice(0, 20));
+    } catch (e) {
+      setError('Failed to fetch comments');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getResultsMessage = () => {
+    if (comments.length === 0) return 'No comments found';
+    return `Found ${comments.length} comment${comments.length > 1 ? 's' : ''}`;
+  };
+
+  return (
+    <div className="app-container">
+      <SearchForm onSearch={handleSearch} onShowAll={loadInitialComments} />
+      <div className="status">
+        {loading && <p>Loading...</p>}
+        {error && <p className="error">{error}</p>}
+        {!loading && hasSearched && <p>{getResultsMessage()}</p>}
+      </div>
+      <CommentList comments={comments} />
+    </div>
+  );
+}
+
+export default App;
