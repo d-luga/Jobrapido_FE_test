@@ -6,6 +6,7 @@
   --color-button-bg-hover: #265977;
   --color-error: #ff0033;
   --color-error-bg: #ffe6e6;
+  --color-highlight: #ffff00;
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -20,6 +21,7 @@
   :root {
     --color-main: #333333;
     --color-background: #e0e0e0;
+    --color-highlight: #a9a908;
   }
 }
 

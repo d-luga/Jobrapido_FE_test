@@ -2,6 +2,8 @@ import { useState } from 'react';
 import SearchForm from './components/SearchForm';
 import CommentList from './components/CommentList';
 import ErrorMessage from './components/ErrorMessage';
+import { createFlexibleQueryRegex } from './utils';
+
 import './App.css';
 
 interface Comment {
@@ -17,6 +19,7 @@ function App() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [lastAction, setLastAction] = useState<'search' | 'initial' | null>(null);
+  const [lastQuery, setLastQuery] = useState('');
 
   const API_URL = 'https://jsonplaceholder.typicode.com/comments';
   const MIN_QUERY_LENGTH = 4; // the search should be performed only for search text longer than 3 characters
@@ -28,13 +31,13 @@ function App() {
     setError('');
     setHasSearched(true);
     setLastAction('search');
+    setLastQuery(query);
 
     try {
       const res = await fetch(API_URL);
       const data: Comment[] = await res.json();
-      const filtered = data
-        .filter(c => c.body.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 20);
+      const regex = createFlexibleQueryRegex(query);
+      const filtered = data.filter(c => regex.test(c.body)).slice(0, 20);
 
       setComments(filtered);
     } catch (e) {
@@ -86,7 +89,7 @@ function App() {
         {error && <ErrorMessage message={error} onRetry={retryLastAction} />}
         {!loading && hasSearched && <p>{getResultsMessage()}</p>}
       </div>
-      <CommentList comments={comments} />
+      <CommentList comments={comments} query={lastQuery} />
     </div>
   );
 }

@@ -4,3 +4,8 @@
   border-radius: 8px;
   margin-bottom: 1rem;
 }
+
+.comment-item .match {
+  font-weight: bold;
+  color: var(--color-highlight);
+}

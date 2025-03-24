@@ -1,4 +1,6 @@
 import './CommentItem.css';
+import { createFlexibleQueryRegex, getContextPreview } from '../utils';
+
 
 interface Comment {
   id: number;
@@ -9,18 +11,29 @@ interface Comment {
 
 interface Props {
   comment: Comment;
+  query: string;
 }
 
-function CommentItem({ comment }: Props) {
-  const shortBody = comment.body.length > 64
-    ? comment.body.slice(0, 61) + '...'
-    : comment.body;
+function CommentItem({ comment, query }: Props) {
+  const match = createFlexibleQueryRegex(query).exec(comment.body);
+  let preview = comment.body.slice(0, 64); // fallback
+
+  if (match && match.index !== undefined) {
+    preview = getContextPreview(comment.body, match.index, match[0].length);
+  }
+
+  const highlighted = query
+    ? preview.replace(
+        createFlexibleQueryRegex(query),
+        (match) => `<strong class="match">${match}</strong>`
+      )
+    : preview;
 
   return (
     <div className="comment-item">
       <h3>{comment.name}</h3>
       <p><strong>Email:</strong> {comment.email}</p>
-      <p>{shortBody}</p>
+      <p dangerouslySetInnerHTML={{ __html: highlighted }} />
     </div>
   );
 }

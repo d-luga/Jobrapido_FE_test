@@ -12,12 +12,12 @@ interface Props {
   comments: Comment[];
 }
 
-function CommentList({ comments }: Props) {
+function CommentList({ comments, query }: { comments: Comment[]; query: string }) {
   return (
     <ul className="comment-list">
       {comments.map(comment => (
         <li key={comment.id}>
-          <CommentItem comment={comment} />
+          <CommentItem comment={comment} query={query} />
         </li>
       ))}
     </ul>
