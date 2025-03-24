@@ -4,11 +4,10 @@ import './SearchForm.css';
 interface SearchFormProps {
   onSearch: (query: string) => void;
   onShowAll: () => void;
+  minLength: number;
 }
 
-const MIN_QUERY_LENGTH = 4; // the search should be performed only for search text longer than 3 characters
-
-function SearchForm({ onSearch, onShowAll }: SearchFormProps) {
+function SearchForm({ onSearch, onShowAll, minLength }: SearchFormProps) {
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -20,8 +19,8 @@ function SearchForm({ onSearch, onShowAll }: SearchFormProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    if (query.length < MIN_QUERY_LENGTH) {
-      setError(`Please enter at least ${MIN_QUERY_LENGTH} characters`);
+    if (query.length < minLength) {
+      setError(`Please enter at least ${minLength} characters`);
       return;
     }
 

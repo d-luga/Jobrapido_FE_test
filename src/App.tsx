@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SearchForm from './components/SearchForm';
 import CommentList from './components/CommentList';
+import ErrorMessage from './components/ErrorMessage';
 import './App.css';
 
 interface Comment {
@@ -15,15 +16,21 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [lastAction, setLastAction] = useState<'search' | 'initial' | null>(null);
+
+  const API_URL = 'https://jsonplaceholder.typicode.com/comments';
+  const MIN_QUERY_LENGTH = 4; // the search should be performed only for search text longer than 3 characters
 
   const handleSearch = async (query: string) => {
-    if (query.length < 4) return;
+    if (query.length < MIN_QUERY_LENGTH) return;
 
     setLoading(true);
     setError('');
     setHasSearched(true);
+    setLastAction('search');
+
     try {
-      const res = await fetch('https://jsonplaceholder.typicode.com/comments');
+      const res = await fetch(API_URL);
       const data: Comment[] = await res.json();
       const filtered = data
         .filter(c => c.body.toLowerCase().includes(query.toLowerCase()))
@@ -41,14 +48,24 @@ function App() {
     setLoading(true);
     setError('');
     setHasSearched(true);
+    setLastAction('initial');
+
     try {
-      const res = await fetch('https://jsonplaceholder.typicode.com/comments');
+      const res = await fetch(API_URL);
       const data: Comment[] = await res.json();
       setComments(data.slice(0, 20));
     } catch (e) {
       setError('Failed to fetch comments');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const retryLastAction = () => {
+    if (lastAction === 'search') {
+      handleSearch(comments[0]?.body || 'test');
+    } else if (lastAction === 'initial') {
+      loadInitialComments();
     }
   };
 
@@ -59,10 +76,14 @@ function App() {
 
   return (
     <div className="app-container">
-      <SearchForm onSearch={handleSearch} onShowAll={loadInitialComments} />
+      <SearchForm 
+        onSearch={handleSearch} 
+        onShowAll={loadInitialComments} 
+        minLength={MIN_QUERY_LENGTH}
+      />
       <div className="status">
         {loading && <p>Loading...</p>}
-        {error && <p className="error">{error}</p>}
+        {error && <ErrorMessage message={error} onRetry={retryLastAction} />}
         {!loading && hasSearched && <p>{getResultsMessage()}</p>}
       </div>
       <CommentList comments={comments} />
